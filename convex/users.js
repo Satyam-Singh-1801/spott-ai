@@ -1,6 +1,7 @@
 import { internal } from "./_generated/api";
-import { mutation, query } from "./_generated/server";
+import { mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { query } from "./_generated/server";
 
 // Store or update user from Clerk
 export const store = mutation({
@@ -54,27 +55,33 @@ export const store = mutation({
   },
 });
 
+// Helper for mutations and queries
+export const getAuthUser = async (ctx) => {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity) {
+    return null;
+  }
+
+  // 🔹 Lookup by tokenIdentifier
+  const user = await ctx.db
+    .query("users")
+    .withIndex("by_token", (q) =>
+      q.eq("tokenIdentifier", identity.tokenIdentifier)
+    )
+    .unique();
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  return user;
+};
+
 // Get current authenticated user
 export const getCurrentUser = query({
+  args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      return null;
-    }
-
-    // 🔹 Lookup by tokenIdentifier
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_token", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier)
-      )
-      .unique();
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    return user;
+    return null;
   },
 });
 
@@ -89,7 +96,7 @@ export const completeOnboarding = mutation({
     interests: v.array(v.string()), // Min 3 categories
   },
   handler: async (ctx, args) => {
-    const user = await ctx.runQuery(internal.users.getCurrentUser);
+    const user = await getAuthUser(ctx);
 
     await ctx.db.patch(user._id, {
       location: args.location,

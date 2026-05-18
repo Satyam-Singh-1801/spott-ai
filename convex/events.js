@@ -1,4 +1,4 @@
-import { internal } from "./_generated/api";
+import { getAuthUser } from "./users";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
@@ -27,7 +27,9 @@ export const createEvent = mutation({
   },
   handler: async (ctx, args) => {
     try {
-      const user = await ctx.runQuery(internal.users.getCurrentUser);
+      const user = await getAuthUser(ctx);
+
+      const { hasPro } = args;
 
       // SERVER-SIDE CHECK: Verify event limit for Free users
       if (!hasPro && user.freeEventsCreated >= 1) {
@@ -93,7 +95,7 @@ export const getEventBySlug = query({
 // Get events by organizer
 export const getMyEvents = query({
   handler: async (ctx) => {
-    const user = await ctx.runQuery(internal.users.getCurrentUser);
+    const user = await getAuthUser(ctx);
 
     const events = await ctx.db
       .query("events")
@@ -109,7 +111,7 @@ export const getMyEvents = query({
 export const deleteEvent = mutation({
   args: { eventId: v.id("events") },
   handler: async (ctx, args) => {
-    const user = await ctx.runQuery(internal.users.getCurrentUser);
+    const user = await getAuthUser(ctx);
 
     const event = await ctx.db.get(args.eventId);
     if (!event) {

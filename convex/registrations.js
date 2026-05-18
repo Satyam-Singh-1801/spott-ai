@@ -1,4 +1,4 @@
-import { internal } from "./_generated/api";
+import { getAuthUser } from "./users";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
@@ -15,7 +15,7 @@ export const registerForEvent = mutation({
     attendeeEmail: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = await ctx.runQuery(internal.users.getCurrentUser);
+    const user = await getAuthUser(ctx);
 
     const event = await ctx.db.get(args.eventId);
     if (!event) {
@@ -65,7 +65,7 @@ export const registerForEvent = mutation({
 export const checkRegistration = query({
   args: { eventId: v.id("events") },
   handler: async (ctx, args) => {
-    const user = await ctx.runQuery(internal.users.getCurrentUser);
+    const user = await getAuthUser(ctx);
 
     if (!user) return null;
 
@@ -83,7 +83,7 @@ export const checkRegistration = query({
 // Get user's registrations (tickets)
 export const getMyRegistrations = query({
   handler: async (ctx) => {
-    const user = await ctx.runQuery(internal.users.getCurrentUser);
+    const user = await getAuthUser(ctx);
 
     const registrations = await ctx.db
       .query("registrations")
@@ -110,7 +110,7 @@ export const getMyRegistrations = query({
 export const cancelRegistration = mutation({
   args: { registrationId: v.id("registrations") },
   handler: async (ctx, args) => {
-    const user = await ctx.runQuery(internal.users.getCurrentUser);
+    const user = await getAuthUser(ctx);
 
     const registration = await ctx.db.get(args.registrationId);
     if (!registration) {
@@ -147,7 +147,7 @@ export const cancelRegistration = mutation({
 export const getEventRegistrations = query({
   args: { eventId: v.id("events") },
   handler: async (ctx, args) => {
-    const user = await ctx.runQuery(internal.users.getCurrentUser);
+    const user = await getAuthUser(ctx);
 
     const event = await ctx.db.get(args.eventId);
     if (!event) {
@@ -172,7 +172,7 @@ export const getEventRegistrations = query({
 export const checkInAttendee = mutation({
   args: { qrCode: v.string() },
   handler: async (ctx, args) => {
-    const user = await ctx.runQuery(internal.users.getCurrentUser);
+    const user = await getAuthUser(ctx);
 
     const registration = await ctx.db
       .query("registrations")

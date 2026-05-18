@@ -1,4 +1,4 @@
-import { internal } from "./_generated/api";
+import { getAuthUser } from "./users";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
@@ -6,7 +6,7 @@ import { v } from "convex/values";
 export const getEventDashboard = query({
   args: { eventId: v.id("events") },
   handler: async (ctx, args) => {
-    const user = await ctx.runQuery(internal.users.getCurrentUser);
+    const user = await getAuthUser(ctx);
 
     if (!user) {
       throw new Error("User not found");

@@ -11,10 +11,15 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center relative z-10">
           {/* Left content */}
           <div className="text-center sm:text-left">
-            <div className="mb-6">
-              <span className="text-gray-500 font-light tracking-wide">
-                spott<span className="text-purple-400">*</span>
-              </span>
+            <div className="mb-6 flex justify-center sm:justify-start">
+              <Image
+                src="/spott.png"
+                alt="Spott logo"
+                width={150}
+                height={50}
+                className="h-10 w-auto sm:h-12"
+                priority
+              />
             </div>
 
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold mb-6 leading-[0.95] tracking-tight">

@@ -24,7 +24,7 @@ export default function RootLayout({ children }) {
         >
           <ClerkProvider appearance={{ baseTheme: dark }}>
             <ConvexClientProvider>
-              <Header />
+              <Header/>
 
               <main className="relative min-h-screen container mx-auto pt-40 md:pt-32">
                 {/* Background glow effects (behind everything) */}

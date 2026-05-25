@@ -81,7 +81,11 @@ export const getAuthUser = async (ctx) => {
 export const getCurrentUser = query({
   args: {},
   handler: async (ctx) => {
-    return null;
+    try {
+      return await getAuthUser(ctx);
+    } catch (e) {
+      return null;
+    }
   },
 });
 
